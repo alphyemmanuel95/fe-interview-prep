@@ -18,6 +18,7 @@ const ICON_PATHS = {
   chevronLeft: 'm15 18-6-6 6-6',
   chevronRight: 'm9 18 6-6-6-6',
   chevronUpDown: 'm7 15 5 5 5-5M7 9l5-5 5 5',
+  link: 'M10 14a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1 1M14 10a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1-1',
 } as const
 
 type IconProps = {

@@ -2,6 +2,7 @@ import { DataTable } from '../../components/DataTable/DataTable'
 import type { Column } from '../../components/DataTable/types'
 import { Icon } from '../../components/Icon'
 import type { Quote } from './api'
+import { CopyLinkButton } from './CopyLinkButton'
 import { useQuotes } from './useQuotes'
 import type { QuotesState } from './useQuotes'
 import { useTableViewParams } from './useTableViewParams'
@@ -120,15 +121,20 @@ export function QuotesTablePage() {
     <section aria-labelledby="data-table-heading">
       <div className="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 shadow-indigo-900/10 ring-slate-900/5">
         <header className="bg-linear-to-br from-indigo-600 via-violet-600 to-fuchsia-500 px-6 pt-6 pb-5 text-white">
-          <h1
-            id="data-table-heading"
-            className="text-2xl font-bold sm:text-3xl"
-          >
-            Data Table
-          </h1>
-          <p className="mt-1 text-sm text-indigo-100">
-            {describeQuotes(state)}
-          </p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h1
+                id="data-table-heading"
+                className="text-2xl font-bold sm:text-3xl"
+              >
+                Data Table
+              </h1>
+              <p className="mt-1 text-sm text-indigo-100">
+                {describeQuotes(state)}
+              </p>
+            </div>
+            <CopyLinkButton />
+          </div>
         </header>
         {content}
       </div>
