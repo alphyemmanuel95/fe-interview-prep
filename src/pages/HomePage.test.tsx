@@ -14,6 +14,7 @@ const QUESTIONS_FIXTURE: readonly Question[] = [
     path: '/q1',
     title: 'Todo',
     summary: 'Manage a list of tasks',
+    tags: ['localStorage', 'reusable hook'],
     Page: EmptyPage,
   },
   {
@@ -37,13 +38,20 @@ describe('HomePage', () => {
   it('shows an empty state when there are no questions', () => {
     renderHomePage([])
     expect(screen.getByText('No questions yet.')).toBeInTheDocument()
-    expect(screen.queryByRole('list')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('list', { name: 'Questions' }),
+    ).not.toBeInTheDocument()
   })
 
   it('links to each question in order', () => {
     renderHomePage(QUESTIONS_FIXTURE)
-    const links = within(screen.getByRole('list')).getAllByRole('link')
+    const links = within(
+      screen.getByRole('list', { name: 'Questions' }),
+    ).getAllByRole('link')
     expect(links).toHaveLength(2)
+    expect(
+      within(links[0] ?? document.body).getByText('localStorage'),
+    ).toBeInTheDocument()
     expect(links[0]).toHaveAccessibleName(/Todo/)
     expect(links[0]).toHaveAttribute('href', '/q1')
     expect(links[1]).toHaveAccessibleName(/Search/)

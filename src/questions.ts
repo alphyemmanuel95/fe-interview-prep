@@ -9,6 +9,8 @@ export type Question = {
   readonly path: string
   readonly title: string
   readonly summary: string
+  /** Key concepts, shown as tags on the home page. */
+  readonly tags?: readonly string[]
   readonly Page: ComponentType
 }
 
@@ -19,6 +21,7 @@ export const QUESTIONS: readonly Question[] = [
     path: '/q1',
     title: 'Todo App',
     summary: 'Add, edit, complete and filter todos that survive a refresh.',
+    tags: ['localStorage', 'reusable hook', 'derived state'],
     Page: TodoPage,
   },
   {
@@ -27,6 +30,7 @@ export const QUESTIONS: readonly Question[] = [
     title: 'Live Search',
     summary:
       'Search products as you type, with debouncing and stale-response protection.',
+    tags: ['debounce', 'AbortController', 'race conditions'],
     Page: SearchPage,
   },
   {
@@ -34,6 +38,7 @@ export const QUESTIONS: readonly Question[] = [
     path: '/q3',
     title: 'Registration Wizard',
     summary: 'A 3-step form with validation, review and saved progress.',
+    tags: ['validation', 'saved progress', 'focus management'],
     Page: WizardPage,
   },
   {
@@ -42,6 +47,7 @@ export const QUESTIONS: readonly Question[] = [
     title: 'Login & Session Handling',
     summary:
       'Silent token refresh with a single refresh call, protected and admin routes.',
+    tags: ['token refresh', 'route guards', 'httpOnly cookie'],
     Page: AuthPage,
   },
 ]
