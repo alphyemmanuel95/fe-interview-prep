@@ -55,8 +55,8 @@ export function SearchResults({ state, query, onRetry }: SearchResultsProps) {
           <h2 className="mt-4 font-medium text-slate-800">
             Couldn’t load results.
           </h2>
-          <p className="mt-1 text-sm break-words text-slate-500">
-            {state.error.message}
+          <p className="mt-1 text-sm text-slate-500">
+            Check your connection and try again.
           </p>
           <button
             type="button"
