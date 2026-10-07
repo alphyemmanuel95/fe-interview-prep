@@ -127,31 +127,30 @@ export function DataTable<T>({
                 ))}
               </tr>
             ))}
-            {result.pageRows.length === 0 && (
-              <tr>
-                <td colSpan={columns.length} className="px-4 py-12">
-                  <div className="flex flex-col items-center text-center">
-                    <p className="font-medium text-slate-700">
-                      {isFiltered
-                        ? 'No rows match your search or filters'
-                        : 'No rows to show'}
-                    </p>
-                    {isFiltered && (
-                      <button
-                        type="button"
-                        onClick={handleClearFilters}
-                        className="mt-4 rounded-xl bg-indigo-600 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      >
-                        Clear filters
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
+
+      {/* The empty state sits outside the scrolling table so it always spans
+          the card, however wide the columns are. */}
+      {result.pageRows.length === 0 && (
+        <div className="flex flex-col items-center border-t border-slate-100 px-4 py-12 text-center">
+          <p className="font-medium text-slate-700">
+            {isFiltered
+              ? 'No rows match your search or filters'
+              : 'No rows to show'}
+          </p>
+          {isFiltered && (
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              className="mt-4 rounded-xl bg-indigo-600 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+      )}
 
       <TablePagination
         idPrefix={idPrefix}

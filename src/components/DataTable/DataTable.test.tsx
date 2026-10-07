@@ -205,6 +205,12 @@ describe('DataTable', () => {
     expect(
       screen.getByText('No rows match your search or filters'),
     ).toBeInTheDocument()
+    // It sits beside the table, not in a cell, so it never scrolls sideways.
+    const table = screen.getByRole('table', { name: 'Players' })
+    expect(
+      within(table).queryByText('No rows match your search or filters'),
+    ).toBeNull()
+    expect(within(table).getAllByRole('row')).toHaveLength(1)
     expect(screen.getByRole('status')).toHaveTextContent('Showing 0 of 0')
 
     fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }))
