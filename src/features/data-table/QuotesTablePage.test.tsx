@@ -53,7 +53,7 @@ describe('QuotesTablePage', () => {
   it('restores the exact view from a shared link', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(quotesResponse()))
 
-    renderAt('/q4?q=code&sort=words&dir=desc&author=hopper&page=2&size=10')
+    renderAt('/q4?q=code&sort=words&dir=desc&f.author=hopper&page=2&size=10')
 
     await screen.findByRole('table', { name: 'Quotes' })
     expect(screen.getByLabelText('Search')).toHaveValue('code')

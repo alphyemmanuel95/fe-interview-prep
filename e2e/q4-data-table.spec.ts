@@ -47,7 +47,7 @@ async function visibleIds(page: Page): Promise<string[]> {
 test('opening a shared link restores the exact view', async ({ page }) => {
   await openTable(
     page,
-    '?q=code&sort=words&dir=desc&author=grace&page=2&size=10',
+    '?q=code&sort=words&dir=desc&f.author=grace&page=2&size=10',
   )
 
   const expected = QUOTES.filter(
@@ -81,7 +81,7 @@ test('changing a filter returns to page 1', async ({ page }) => {
 
   await page.getByRole('textbox', { name: 'Filter by Author' }).fill('turing')
 
-  await expect(page).toHaveURL(/\/q4\?author=turing$/)
+  await expect(page).toHaveURL(/\/q4\?f\.author=turing$/)
   await expect(page.getByText('Page 1 of 11', { exact: true })).toBeVisible()
   await expect(
     page.getByText('Showing 1–10 of 104', { exact: true }),

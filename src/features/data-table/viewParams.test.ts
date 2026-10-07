@@ -38,7 +38,7 @@ describe('parseView', () => {
   it('reads every part of the view', () => {
     expect(
       parse(
-        'q=war&sort=title&dir=desc&title=peace&genre=History&page=3&size=50',
+        'q=war&sort=title&dir=desc&f.title=peace&f.genre=History&page=3&size=50',
       ),
     ).toEqual({
       search: 'war',
@@ -74,7 +74,13 @@ describe('parseView', () => {
   )
 
   it('ignores empty, unknown and invalid filters', () => {
-    expect(parse('title=&author=tolstoy&genre=Poetry').filters).toEqual({})
+    expect(parse('f.title=&f.author=tolstoy&f.genre=Poetry').filters).toEqual(
+      {},
+    )
+  })
+
+  it('reads filters only from namespaced parameters', () => {
+    expect(parse('title=peace').filters).toEqual({})
   })
 })
 
@@ -95,7 +101,7 @@ describe('serializeView', () => {
       pageSize: 25,
     })
     expect(params.toString()).toBe(
-      'q=war+and+peace&sort=id&dir=asc&title=peace&page=2&size=25',
+      'q=war+and+peace&sort=id&dir=asc&f.title=peace&page=2&size=25',
     )
   })
 
@@ -111,5 +117,34 @@ describe('serializeView', () => {
     expect(parseView(serializeView(DEFAULT_VIEW), COLUMNS)).toEqual(
       DEFAULT_VIEW,
     )
+  })
+
+  it('keeps a filter on a column named like a reserved parameter apart', () => {
+    type Issue = { readonly page: string; readonly q: string }
+    const columns: readonly Column<Issue>[] = [
+      {
+        id: 'page',
+        header: 'Page',
+        getValue: (row) => row.page,
+        filter: { type: 'text' },
+      },
+      {
+        id: 'q',
+        header: 'Question',
+        getValue: (row) => row.q,
+        filter: { type: 'text' },
+      },
+    ]
+    const view: TableView = {
+      ...DEFAULT_VIEW,
+      search: 'help',
+      filters: { page: 'intro', q: 'why' },
+      page: 4,
+    }
+
+    const params = serializeView(view)
+
+    expect(params.toString()).toBe('q=help&f.page=intro&f.q=why&page=4')
+    expect(parseView(params, columns)).toEqual(view)
   })
 })

@@ -7,10 +7,7 @@ import type {
   TableView,
 } from '../../components/DataTable/types'
 
-/**
- * URL parameter names. Each filter uses its column id as the parameter name,
- * so column ids must not collide with these.
- */
+/** URL parameter names for the parts of the view that are not filters. */
 const PARAM = {
   search: 'q',
   sort: 'sort',
@@ -18,6 +15,16 @@ const PARAM = {
   page: 'page',
   pageSize: 'size',
 } as const
+
+/**
+ * Filters are written as `f.<columnId>`, so a column id can never collide
+ * with the reserved names above (a column called "page" stays a filter).
+ */
+const FILTER_PREFIX = 'f.'
+
+function filterParam(columnId: string): string {
+  return `${FILTER_PREFIX}${columnId}`
+}
 
 const POSITIVE_INTEGER = /^[1-9]\d*$/
 
@@ -46,7 +53,7 @@ function parseFilters<T>(
 ): Record<string, string> {
   const filters: Record<string, string> = {}
   for (const column of columns) {
-    const value = params.get(column.id)
+    const value = params.get(filterParam(column.id))
     if (column.filter === undefined || value === null || value === '') {
       continue
     }
@@ -104,7 +111,7 @@ export function serializeView(view: TableView): URLSearchParams {
   }
   for (const [columnId, value] of Object.entries(view.filters)) {
     if (value !== '') {
-      params.set(columnId, value)
+      params.set(filterParam(columnId), value)
     }
   }
   if (view.page !== DEFAULT_VIEW.page) {

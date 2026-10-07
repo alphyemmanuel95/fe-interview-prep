@@ -8,7 +8,7 @@ export type ColumnFilter =
 
 /** Describes one column; the table is configured entirely by these. */
 export type Column<T> = {
-  /** Stable key, also used as the column's filter parameter name. */
+  /** Stable key, also used to name the column's filter in the URL. */
   readonly id: string
   readonly header: string
   /** The value used for searching, filtering and sorting. */
