@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { SubmitEvent } from 'react'
 import { usePersistentState } from '../../hooks/usePersistentState'
+import { createId } from '../../lib/createId'
 import { Icon } from './Icon'
 import { TodoFilters } from './TodoFilters'
 import { TodoItem } from './TodoItem'
@@ -37,14 +38,45 @@ export function TodoPage() {
   const progressPercent =
     todos.length === 0 ? 0 : Math.round((completedCount / todos.length) * 100)
 
+  const newTodoRef = useRef<HTMLInputElement>(null)
+  const listRef = useRef<HTMLUListElement>(null)
+  // Index in the visible list of an item that is about to disappear, so focus
+  // can move to its neighbour instead of being lost to <body>.
+  const focusIndexAfterRemoval = useRef<number | null>(null)
+
+  useEffect(() => {
+    const index = focusIndexAfterRemoval.current
+    if (index === null) {
+      return
+    }
+    focusIndexAfterRemoval.current = null
+    const checkboxes = listRef.current?.querySelectorAll<HTMLInputElement>(
+      'input[type="checkbox"]',
+    )
+    const neighbour =
+      checkboxes === undefined
+        ? undefined
+        : checkboxes[Math.min(index, checkboxes.length - 1)]
+    ;(neighbour ?? newTodoRef.current)?.focus()
+  }, [todos, filter])
+
+  function rememberFocusIndex(id: string) {
+    const index = visibleTodos.findIndex((todo) => todo.id === id)
+    focusIndexAfterRemoval.current = index === -1 ? null : index
+  }
+
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
-    const id = crypto.randomUUID()
+    const id = createId()
     setTodos((current) => addTodo(current, draft, id))
     setDraft('')
   }
 
   function handleToggle(id: string) {
+    // Toggling only hides the item when a filter other than "all" is active.
+    if (filter !== 'all') {
+      rememberFocusIndex(id)
+    }
     setTodos((current) => toggleTodo(current, id))
   }
 
@@ -53,6 +85,7 @@ export function TodoPage() {
   }
 
   function handleDelete(id: string) {
+    rememberFocusIndex(id)
     setTodos((current) => deleteTodo(current, id))
   }
 
@@ -97,6 +130,7 @@ export function TodoPage() {
               New todo
             </label>
             <input
+              ref={newTodoRef}
               id="new-todo"
               value={draft}
               onChange={(event) => {
@@ -139,7 +173,7 @@ export function TodoPage() {
                 No {filter} todos.
               </p>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul ref={listRef} className="divide-y divide-slate-100">
                 {visibleTodos.map((todo) => (
                   <TodoItem
                     key={todo.id}

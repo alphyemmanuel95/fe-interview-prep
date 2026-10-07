@@ -68,6 +68,44 @@ describe('TodoPage', () => {
     ).toHaveFocus()
   })
 
+  it('discards the draft and restores focus when editing is cancelled', () => {
+    render(<TodoPage />)
+    addTodo('Buy milk')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit "Buy milk"' }))
+    const input = screen.getByRole('textbox', { name: 'Edit "Buy milk"' })
+    fireEvent.change(input, { target: { value: 'Something else' } })
+    fireEvent.keyDown(input, { key: 'Escape' })
+
+    expect(screen.getByLabelText('Buy milk')).toBeInTheDocument()
+    expect(screen.queryByText('Something else')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Edit "Buy milk"' }),
+    ).toHaveFocus()
+  })
+
+  it('moves focus to the next item after a delete, then to the input', () => {
+    render(<TodoPage />)
+    addTodo('Buy milk')
+    addTodo('Walk dog')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete "Buy milk"' }))
+    expect(screen.getByLabelText('Walk dog')).toHaveFocus()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete "Walk dog"' }))
+    expect(screen.getByLabelText('New todo')).toHaveFocus()
+  })
+
+  it('keeps focus in the list when completing an item hides it', () => {
+    render(<TodoPage />)
+    addTodo('Buy milk')
+    addTodo('Walk dog')
+    fireEvent.click(screen.getByRole('button', { name: 'Active' }))
+
+    fireEvent.click(screen.getByLabelText('Walk dog'))
+    expect(screen.getByLabelText('Buy milk')).toHaveFocus()
+  })
+
   it('deletes a todo', () => {
     render(<TodoPage />)
     addTodo('Buy milk')
