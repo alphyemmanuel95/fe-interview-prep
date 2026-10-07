@@ -1,6 +1,12 @@
 import { Icon } from '../Icon'
 import { PAGE_SIZES } from './types'
-import type { PageSize } from './types'
+import type { PageSize, SortDirection } from './types'
+
+/** The column the rows are sorted by, as the user sees it. */
+export type SortSummary = {
+  readonly header: string
+  readonly direction: SortDirection
+}
 
 type TablePaginationProps = {
   readonly idPrefix: string
@@ -8,6 +14,7 @@ type TablePaginationProps = {
   readonly pageCount: number
   readonly pageSize: PageSize
   readonly totalRows: number
+  readonly sortedBy: SortSummary | null
   readonly onPageChange: (page: number) => void
   readonly onPageSizeChange: (pageSize: PageSize) => void
 }
@@ -30,6 +37,15 @@ function describeRange(
   return `Showing ${NUMBER_FORMAT.format(first)}–${NUMBER_FORMAT.format(last)} of ${NUMBER_FORMAT.format(totalRows)}`
 }
 
+const DIRECTION_LABELS = { asc: 'ascending', desc: 'descending' } as const
+
+function describeSort(sortedBy: SortSummary | null): string {
+  if (sortedBy === null) {
+    return ''
+  }
+  return `, sorted by ${sortedBy.header}, ${DIRECTION_LABELS[sortedBy.direction]}`
+}
+
 function toPageSize(value: string): PageSize {
   return PAGE_SIZES.find((size) => String(size) === value) ?? PAGE_SIZES[0]
 }
@@ -45,6 +61,7 @@ export function TablePagination({
   pageCount,
   pageSize,
   totalRows,
+  sortedBy,
   onPageChange,
   onPageSizeChange,
 }: TablePaginationProps) {
@@ -54,7 +71,12 @@ export function TablePagination({
 
   return (
     <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-      <p role="status">{describeRange(page, pageSize, totalRows)}</p>
+      {/* The sort is shown by the column headers, so it is only spelled out
+          for screen readers, which announce this status on every change. */}
+      <p role="status">
+        <span>{describeRange(page, pageSize, totalRows)}</span>
+        <span className="sr-only">{describeSort(sortedBy)}</span>
+      </p>
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">

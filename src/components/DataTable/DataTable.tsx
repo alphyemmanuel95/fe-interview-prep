@@ -1,8 +1,9 @@
 import { useId, useRef } from 'react'
 import { SortableHeader } from './SortableHeader'
 import { TablePagination } from './TablePagination'
+import type { SortSummary } from './TablePagination'
 import { TableToolbar } from './TableToolbar'
-import { applyView, nextSort } from './tableModel'
+import { applyView, findSortColumn, nextSort } from './tableModel'
 import type { Column, TableView } from './types'
 
 type DataTableProps<T> = {
@@ -21,6 +22,18 @@ function hasActiveFilters(view: TableView): boolean {
     view.search.trim() !== '' ||
     Object.values(view.filters).some((value) => value.trim() !== '')
   )
+}
+
+function summariseSort<T>(
+  columns: readonly Column<T>[],
+  view: TableView,
+): SortSummary | null {
+  const { sort } = view
+  const column = findSortColumn(columns, sort)
+  if (sort === null || column === undefined) {
+    return null
+  }
+  return { header: column.header, direction: sort.direction }
 }
 
 function alignClass(align: Column<unknown>['align']): string {
@@ -169,6 +182,7 @@ export function DataTable<T>({
         pageCount={result.pageCount}
         pageSize={view.pageSize}
         totalRows={result.totalRows}
+        sortedBy={summariseSort(columns, view)}
         onPageChange={(page) => {
           onViewChange({ ...view, page })
         }}

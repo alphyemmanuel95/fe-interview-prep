@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyView, nextSort } from './tableModel'
+import { applyView, findSortColumn, nextSort } from './tableModel'
 import { DEFAULT_VIEW } from './types'
 import type { Column, TableView } from './types'
 
@@ -201,6 +201,24 @@ describe('applyView', () => {
       pageCount: 1,
       page: 1,
     })
+  })
+})
+
+describe('findSortColumn', () => {
+  it('finds the sortable column a sort refers to', () => {
+    expect(
+      findSortColumn(COLUMNS, { columnId: 'score', direction: 'asc' })?.header,
+    ).toBe('Score')
+  })
+
+  it('finds nothing for no sort, an unknown or an unsortable column', () => {
+    expect(findSortColumn(COLUMNS, null)).toBeUndefined()
+    expect(
+      findSortColumn(COLUMNS, { columnId: 'nope', direction: 'asc' }),
+    ).toBeUndefined()
+    expect(
+      findSortColumn(COLUMNS, { columnId: 'team', direction: 'asc' }),
+    ).toBeUndefined()
   })
 })
 

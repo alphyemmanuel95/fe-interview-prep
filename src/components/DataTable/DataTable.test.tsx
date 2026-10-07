@@ -111,14 +111,21 @@ describe('DataTable', () => {
     fireEvent.click(button)
     expect(header).toHaveAttribute('aria-sort', 'ascending')
     expect(visibleNames()[0]).toBe('Player 30')
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Showing 1–10 of 30, sorted by Score, ascending',
+    )
 
     fireEvent.click(button)
     expect(header).toHaveAttribute('aria-sort', 'descending')
     expect(visibleNames()[0]).toBe('Player 1')
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Showing 1–10 of 30, sorted by Score, descending',
+    )
 
     fireEvent.click(button)
     expect(header).toHaveAttribute('aria-sort', 'none')
     expect(visibleNames().slice(0, 2)).toEqual(['Player 1', 'Player 2'])
+    expect(screen.getByRole('status')).toHaveTextContent(/^Showing 1–10 of 30$/)
   })
 
   it('does not make unsortable columns sortable', () => {

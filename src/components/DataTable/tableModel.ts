@@ -57,15 +57,23 @@ function matchesFilters<T>(
   })
 }
 
+/** The sortable column `sort` refers to, or undefined if it names none. */
+export function findSortColumn<T>(
+  columns: readonly Column<T>[],
+  sort: SortState | null,
+): Column<T> | undefined {
+  return columns.find(
+    (candidate) =>
+      candidate.id === sort?.columnId && candidate.isSortable === true,
+  )
+}
+
 function sortRows<T>(
   rows: readonly T[],
   columns: readonly Column<T>[],
   sort: SortState | null,
 ): readonly T[] {
-  const column = columns.find(
-    (candidate) =>
-      candidate.id === sort?.columnId && candidate.isSortable === true,
-  )
+  const column = findSortColumn(columns, sort)
   if (sort === null || column === undefined) {
     return rows
   }
