@@ -33,12 +33,13 @@ export function SortableHeader({
     <th
       scope="col"
       aria-sort={direction === null ? 'none' : ARIA_SORT[direction]}
-      className={`px-3 py-3 sm:px-4 ${align === 'right' ? 'text-right' : 'text-left'}`}
+      className={`p-0 ${align === 'right' ? 'text-right' : 'text-left'}`}
     >
+      {/* The padding lives on the button so the whole cell is the target. */}
       <button
         type="button"
         onClick={onSort}
-        className={`inline-flex items-center gap-1 rounded font-semibold text-slate-700 hover:text-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${align === 'right' ? 'flex-row-reverse' : ''}`}
+        className={`flex w-full items-center gap-1 px-3 py-3 font-semibold text-slate-700 hover:text-indigo-700 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 sm:px-4 ${align === 'right' ? 'flex-row-reverse text-right' : 'text-left'}`}
       >
         {label}
         {icon}

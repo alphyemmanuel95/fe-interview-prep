@@ -142,3 +142,17 @@ test.describe('on a small screen', () => {
     await expect(clear).toBeInViewport({ ratio: 1 })
   })
 })
+
+test('makes each sort header button fill its header cell', async ({ page }) => {
+  await openTable(page)
+
+  for (const name of ['ID', 'Quote', 'Author', 'Words']) {
+    const header = page.getByRole('columnheader', { name, exact: true })
+    const button = header.getByRole('button', { name, exact: true })
+    const headerBox = await header.boundingBox()
+    const buttonBox = await button.boundingBox()
+    expect(buttonBox?.height ?? 0).toBeGreaterThanOrEqual(40)
+    expect(buttonBox?.height ?? 0).toBeCloseTo(headerBox?.height ?? 0, 0)
+    expect(buttonBox?.width ?? 0).toBeCloseTo(headerBox?.width ?? 0, 0)
+  }
+})
