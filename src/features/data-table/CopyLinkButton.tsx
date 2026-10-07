@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Icon } from '../../components/Icon'
 
 type CopyStatus = 'idle' | 'copied' | 'failed'
@@ -23,16 +23,23 @@ const LABELS: Record<CopyStatus, string> = {
  */
 export function CopyLinkButton() {
   const [status, setStatus] = useState<CopyStatus>('idle')
-  const resetTimer = useRef<number | undefined>(undefined)
+  // Counts copy attempts so a repeat click restarts the reset timer even
+  // when the status itself does not change.
+  const [copyCount, setCopyCount] = useState(0)
 
   useEffect(() => {
-    return () => {
-      window.clearTimeout(resetTimer.current)
+    if (status === 'idle') {
+      return
     }
-  }, [])
+    const timerId = window.setTimeout(() => {
+      setStatus('idle')
+    }, RESET_DELAY_MS)
+    return () => {
+      window.clearTimeout(timerId)
+    }
+  }, [status, copyCount])
 
   async function handleCopy() {
-    window.clearTimeout(resetTimer.current)
     try {
       await navigator.clipboard.writeText(window.location.href)
       setStatus('copied')
@@ -40,9 +47,7 @@ export function CopyLinkButton() {
       // Clipboard access can be blocked (permissions, insecure context).
       setStatus('failed')
     }
-    resetTimer.current = window.setTimeout(() => {
-      setStatus('idle')
-    }, RESET_DELAY_MS)
+    setCopyCount((count) => count + 1)
   }
 
   return (

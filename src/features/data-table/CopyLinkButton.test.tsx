@@ -57,4 +57,32 @@ describe('CopyLinkButton', () => {
       screen.getByRole('button', { name: 'Copy link' }),
     ).toBeInTheDocument()
   })
+
+  it('restarts the reset delay when clicked again', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    mockClipboard(() => Promise.resolve())
+    render(<CopyLinkButton />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Copy link' }))
+    await screen.findByRole('button', { name: 'Copied' })
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1500)
+    })
+    // Let the second copy settle before time moves on.
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Copied' }))
+      await Promise.resolve()
+    })
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1500)
+    })
+
+    expect(screen.getByRole('button', { name: 'Copied' })).toBeInTheDocument()
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(500)
+    })
+    expect(
+      screen.getByRole('button', { name: 'Copy link' }),
+    ).toBeInTheDocument()
+  })
 })
