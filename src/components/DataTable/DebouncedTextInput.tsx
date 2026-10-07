@@ -1,5 +1,4 @@
-import { useEffect, useEffectEvent, useState } from 'react'
-import { useDebouncedValue } from '../../hooks/useDebouncedValue'
+import { useEffect, useRef, useState } from 'react'
 
 const DEBOUNCE_MS = 300
 
@@ -27,25 +26,34 @@ export function DebouncedTextInput({
 }: DebouncedTextInputProps) {
   const [draft, setDraft] = useState(value)
   const [lastValue, setLastValue] = useState(value)
+  const commitTimer = useRef<number | undefined>(undefined)
   // When the committed value changes from outside, the draft follows it.
   // Adjusting during render avoids an extra effect-driven render pass.
   if (value !== lastValue) {
     setLastValue(value)
     setDraft(value)
   }
-  const debouncedDraft = useDebouncedValue(draft, DEBOUNCE_MS)
 
-  // An effect event reads the latest `value`, so the effect re-runs only when
-  // the debounced text settles, never just because `value` changed outside.
-  const commit = useEffectEvent((text: string) => {
-    if (text !== value) {
-      onCommit(text)
-    }
-  })
-
+  // A pending commit belongs to the value it was typed against: an outside
+  // change (back/forward, Clear filters) cancels it, as does unmounting.
   useEffect(() => {
-    commit(debouncedDraft)
-  }, [debouncedDraft])
+    return () => {
+      window.clearTimeout(commitTimer.current)
+    }
+  }, [value])
+
+  // Each keystroke restarts the timer, so only a pause commits. Comparing
+  // against the value at typing time means retyping a previously committed
+  // text after an outside reset still commits.
+  function handleChange(text: string) {
+    setDraft(text)
+    window.clearTimeout(commitTimer.current)
+    commitTimer.current = window.setTimeout(() => {
+      if (text !== value) {
+        onCommit(text)
+      }
+    }, DEBOUNCE_MS)
+  }
 
   return (
     <div className="flex flex-col gap-1">
@@ -57,7 +65,7 @@ export function DebouncedTextInput({
         type={type}
         value={draft}
         onChange={(event) => {
-          setDraft(event.target.value)
+          handleChange(event.target.value)
         }}
         autoComplete="off"
         placeholder={placeholder}
