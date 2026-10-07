@@ -1,4 +1,4 @@
-import { INDIA } from './types'
+import { COUNTRIES, INDIA, STEPS } from './types'
 import type { FieldErrors, StepId, WizardData, WizardField } from './types'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -44,6 +44,17 @@ function validatePhone(phone: string): string | undefined {
   return undefined
 }
 
+function validateCountry(country: string): string | undefined {
+  if (isBlank(country)) {
+    return 'Select your country.'
+  }
+  // Stored progress may hold a value the select can't show.
+  if (!COUNTRIES.some((option) => option === country)) {
+    return 'Select a country from the list.'
+  }
+  return undefined
+}
+
 function validatePostalCode(
   postalCode: string,
   country: string,
@@ -80,7 +91,7 @@ export function validatePersonal(data: WizardData): FieldErrors {
 
 export function validateAddress(data: WizardData): FieldErrors {
   return collectErrors([
-    ['country', isBlank(data.country) ? 'Select your country.' : undefined],
+    ['country', validateCountry(data.country)],
     ['city', isBlank(data.city) ? 'Enter your city.' : undefined],
     ['postalCode', validatePostalCode(data.postalCode, data.country)],
   ])
@@ -115,4 +126,15 @@ export function findFirstInvalidField(
   errors: FieldErrors,
 ): WizardField | undefined {
   return STEP_FIELDS[step].find((field) => errors[field] !== undefined)
+}
+
+/**
+ * The earliest step whose data is invalid, or 'review' when every step is
+ * valid. Used to never resume stored progress past an invalid step.
+ */
+export function findFirstInvalidStep(data: WizardData): StepId {
+  return (
+    STEPS.find((step) => Object.keys(validateStep(step, data)).length > 0) ??
+    'review'
+  )
 }
