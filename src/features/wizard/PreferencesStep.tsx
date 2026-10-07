@@ -14,20 +14,40 @@ const PLAN_DETAILS: Record<Plan, { price: string; description: string }> = {
 }
 
 const SKILLS_HINT_ID = 'wizard-skills-hint'
+const SKILLS_NOTICE_ID = 'wizard-skills-notice'
 
 export function PreferencesStep({ data, errors, onChange }: StepFieldsProps) {
   const [skillDraft, setSkillDraft] = useState('')
+  // Inline feedback when a skill is not added (e.g. a duplicate).
+  const [skillNotice, setSkillNotice] = useState('')
+  // Polite screen-reader feedback for successful adds and removals.
+  const [announcement, setAnnouncement] = useState('')
   const skillInputRef = useRef<HTMLInputElement>(null)
   const skillsId = getFieldId('skills')
   const planErrorId = errors.plan === undefined ? undefined : getErrorId('plan')
-  const skillsDescribedBy =
-    errors.skills === undefined
-      ? SKILLS_HINT_ID
-      : `${SKILLS_HINT_ID} ${getErrorId('skills')}`
+  const skillsDescribedBy = [
+    SKILLS_HINT_ID,
+    skillNotice === '' ? undefined : SKILLS_NOTICE_ID,
+    errors.skills === undefined ? undefined : getErrorId('skills'),
+  ]
+    .filter((id) => id !== undefined)
+    .join(' ')
 
   function handleAddSkill() {
-    onChange({ skills: addSkill(data.skills, skillDraft) })
+    const skill = skillDraft.trim()
+    if (skill === '') {
+      return
+    }
+    const nextSkills = addSkill(data.skills, skill)
+    if (nextSkills === data.skills) {
+      // Keep the draft so the user can see and correct what they typed.
+      setSkillNotice(`${skill} is already added.`)
+      return
+    }
+    onChange({ skills: nextSkills })
     setSkillDraft('')
+    setSkillNotice('')
+    setAnnouncement(`Added ${skill}`)
   }
 
   function handleSkillKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -40,6 +60,7 @@ export function PreferencesStep({ data, errors, onChange }: StepFieldsProps) {
 
   function handleRemoveSkill(skill: string) {
     onChange({ skills: removeSkill(data.skills, skill) })
+    setAnnouncement(`Removed ${skill}`)
     // The remove button disappears with its chip; keep focus in the field.
     skillInputRef.current?.focus()
   }
@@ -105,6 +126,7 @@ export function PreferencesStep({ data, errors, onChange }: StepFieldsProps) {
             value={skillDraft}
             onChange={(event) => {
               setSkillDraft(event.target.value)
+              setSkillNotice('')
             }}
             onKeyDown={handleSkillKeyDown}
             placeholder="e.g. React"
@@ -122,7 +144,15 @@ export function PreferencesStep({ data, errors, onChange }: StepFieldsProps) {
             Add
           </button>
         </div>
+        {skillNotice !== '' && (
+          <p id={SKILLS_NOTICE_ID} className="mt-1.5 text-sm text-amber-800">
+            {skillNotice}
+          </p>
+        )}
         <FieldError field="skills" message={errors.skills} />
+        <p role="status" className="sr-only">
+          {announcement}
+        </p>
 
         {data.skills.length > 0 && (
           <ul aria-label="Added skills" className="mt-3 flex flex-wrap gap-2">
@@ -138,7 +168,7 @@ export function PreferencesStep({ data, errors, onChange }: StepFieldsProps) {
                     handleRemoveSkill(skill)
                   }}
                   aria-label={`Remove ${skill}`}
-                  className="rounded-full p-1 text-indigo-600 transition hover:bg-indigo-100 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-600"
+                  className="-my-1 rounded-full p-2 text-indigo-600 transition hover:bg-indigo-100 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-600"
                 >
                   <Icon name="x" className="size-3.5" />
                 </button>
