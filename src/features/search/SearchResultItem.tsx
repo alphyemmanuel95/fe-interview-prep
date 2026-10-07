@@ -34,7 +34,7 @@ export function SearchResultItem({ product, query }: SearchResultItemProps) {
         <p className="font-medium break-words text-slate-800">
           <HighlightedText text={product.title} query={query} />
         </p>
-        <p className="mt-0.5 truncate text-sm text-slate-500">{details}</p>
+        <p className="mt-0.5 text-sm break-words text-slate-500">{details}</p>
       </div>
       <p className="shrink-0 font-semibold text-indigo-700">
         {PRICE_FORMAT.format(product.price)}
