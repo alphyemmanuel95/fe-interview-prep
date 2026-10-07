@@ -11,7 +11,7 @@ type TodoItemProps = {
 }
 
 const ICON_BUTTON_CLASS =
-  'rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+  'rounded-lg p-2.5 text-slate-500 transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
 
 const TEXT_BUTTON_CLASS =
   'rounded-lg px-3 py-1.5 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
@@ -107,12 +107,12 @@ export function TodoItem({ todo, onToggle, onEdit, onDelete }: TodoItemProps) {
       <label
         htmlFor={checkboxId}
         className={`min-w-0 flex-1 cursor-pointer break-words transition ${
-          todo.completed ? 'text-slate-400 line-through' : 'text-slate-800'
+          todo.completed ? 'text-slate-500 line-through' : 'text-slate-800'
         }`}
       >
         {todo.title}
       </label>
-      <div className="flex shrink-0 items-center">
+      <div className="flex shrink-0 items-center gap-1">
         <button
           ref={editButtonRef}
           type="button"
