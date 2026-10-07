@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { QuotesTablePage } from './features/data-table/QuotesTablePage'
 import { SearchPage } from './features/search/SearchPage'
 import { TodoPage } from './features/todo/TodoPage'
 import { WizardPage } from './features/wizard/WizardPage'
@@ -34,5 +35,13 @@ export const QUESTIONS: readonly Question[] = [
     title: 'Registration Wizard',
     summary: 'A 3-step form with validation, review and saved progress.',
     Page: WizardPage,
+  },
+  {
+    id: 'q4',
+    path: '/q4',
+    title: 'Data Table',
+    summary:
+      'A reusable table with sorting, search, filters, paging and shareable URLs.',
+    Page: QuotesTablePage,
   },
 ]

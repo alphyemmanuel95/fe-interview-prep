@@ -13,6 +13,12 @@ const ICON_PATHS = {
   arrowRight: 'M5 12h14m-7-7 7 7-7 7',
   clipboard:
     'M9 5h6M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m0 0h1a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1m0 7 2 2 4-4',
+  chevronUp: 'm6 15 6-6 6 6',
+  chevronDown: 'm6 9 6 6 6-6',
+  chevronLeft: 'm15 18-6-6 6-6',
+  chevronRight: 'm9 18 6-6-6-6',
+  chevronUpDown: 'm7 15 5 5 5-5M7 9l5-5 5 5',
+  link: 'M10 14a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1 1M14 10a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1-1',
 } as const
 
 type IconProps = {
