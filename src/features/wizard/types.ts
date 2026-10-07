@@ -51,6 +51,15 @@ export function getFieldId(field: WizardField): string {
   return `wizard-${field}`
 }
 
+export function getPlanOptionId(plan: Plan): string {
+  return `${getFieldId('plan')}-${plan.toLowerCase()}`
+}
+
+/** The element to focus for `field`; the plan group via its first option. */
+export function getFocusTargetId(field: WizardField): string {
+  return field === 'plan' ? getPlanOptionId(PLANS[0]) : getFieldId(field)
+}
+
 export function getErrorId(field: WizardField): string {
   return `${getFieldId(field)}-error`
 }

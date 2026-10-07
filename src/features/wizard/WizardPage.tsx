@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import type { SubmitEvent } from 'react'
 import { AddressStep } from './AddressStep'
 import { PersonalStep } from './PersonalStep'
+import { PreferencesStep } from './PreferencesStep'
 import { ProgressSteps } from './ProgressSteps'
 import { StepActions } from './StepActions'
-import { getFieldId, STEPS } from './types'
+import { getFocusTargetId, STEPS } from './types'
 import type { StepId, WizardData, WizardState } from './types'
 import { findFirstInvalidField, validateStep } from './validation'
 
@@ -84,7 +85,7 @@ export function WizardPage() {
     const firstInvalidField = findFirstInvalidField(step, stepErrors)
     if (firstInvalidField !== undefined) {
       setAttemptedStep(step)
-      document.getElementById(getFieldId(firstInvalidField))?.focus()
+      document.getElementById(getFocusTargetId(firstInvalidField))?.focus()
       return
     }
     goToStep(getAdjacentStep(step, 1))
@@ -130,6 +131,7 @@ export function WizardPage() {
 
           {step === 'personal' && <PersonalStep {...stepProps} />}
           {step === 'address' && <AddressStep {...stepProps} />}
+          {step === 'preferences' && <PreferencesStep {...stepProps} />}
 
           <StepActions
             submitLabel="Next"
