@@ -2,13 +2,13 @@
 
 Five React + TypeScript features, each shipped as its own pull request. Every question lives on its own route, linked from the home page.
 
-| #   | Question                 | PR link |
-| --- | ------------------------ | ------- |
-| 1   | Todo App                 |         |
-| 2   | Live Search              |         |
-| 3   | Registration Wizard      |         |
-| 4   | Data Table               |         |
-| 5   | Login & Session Handling |         |
+| #   | Question                 | PR link                                                           |
+| --- | ------------------------ | ----------------------------------------------------------------- |
+| 1   | Todo App                 | [#1](https://github.com/alphyemmanuel95/fe-interview-prep/pull/1) |
+| 2   | Live Search              |                                                                   |
+| 3   | Registration Wizard      |                                                                   |
+| 4   | Data Table               |                                                                   |
+| 5   | Login & Session Handling |                                                                   |
 
 **Video:**
 

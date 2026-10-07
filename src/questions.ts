@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { TodoPage } from './features/todo/TodoPage'
 
 export type Question = {
   readonly id: string
@@ -9,4 +10,12 @@ export type Question = {
 }
 
 /** Questions in display order. Each question's PR registers its page here. */
-export const QUESTIONS: readonly Question[] = []
+export const QUESTIONS: readonly Question[] = [
+  {
+    id: 'q1',
+    path: '/q1',
+    title: 'Todo App',
+    summary: 'Add, edit, complete and filter todos that survive a refresh.',
+    Page: TodoPage,
+  },
+]
