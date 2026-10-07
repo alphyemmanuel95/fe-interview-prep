@@ -1,8 +1,20 @@
+import { Route, Routes } from 'react-router'
+import { Layout } from './components/Layout'
+import { HomePage } from './pages/HomePage'
+import { NotFoundPage } from './pages/NotFoundPage'
+import { QUESTIONS } from './questions'
+
 function App() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-3xl font-semibold">Devaswom</h1>
-    </main>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<HomePage questions={QUESTIONS} />} />
+        {QUESTIONS.map(({ id, path, Page }) => (
+          <Route key={id} path={path} element={<Page />} />
+        ))}
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   )
 }
 
