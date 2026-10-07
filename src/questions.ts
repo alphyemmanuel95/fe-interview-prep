@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { AuthPage } from './features/auth/AuthPage'
 import { SearchPage } from './features/search/SearchPage'
 import { TodoPage } from './features/todo/TodoPage'
 import { WizardPage } from './features/wizard/WizardPage'
@@ -34,5 +35,13 @@ export const QUESTIONS: readonly Question[] = [
     title: 'Registration Wizard',
     summary: 'A 3-step form with validation, review and saved progress.',
     Page: WizardPage,
+  },
+  {
+    id: 'q5',
+    path: '/q5',
+    title: 'Login & Session Handling',
+    summary:
+      'Silent token refresh with a single refresh call, protected and admin routes.',
+    Page: AuthPage,
   },
 ]
