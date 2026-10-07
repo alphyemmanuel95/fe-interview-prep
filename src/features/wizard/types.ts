@@ -46,6 +46,50 @@ export type WizardState = {
 /** Field → error message. A field without an entry is valid. */
 export type FieldErrors = Partial<Record<WizardField, string>>
 
+function isStepId(value: unknown): value is StepId {
+  return STEPS.some((step) => step === value)
+}
+
+function isPlanOrEmpty(value: unknown): value is Plan | '' {
+  return value === '' || PLANS.some((plan) => plan === value)
+}
+
+function isWizardData(value: unknown): value is WizardData {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'name' in value &&
+    typeof value.name === 'string' &&
+    'email' in value &&
+    typeof value.email === 'string' &&
+    'phone' in value &&
+    typeof value.phone === 'string' &&
+    'country' in value &&
+    typeof value.country === 'string' &&
+    'city' in value &&
+    typeof value.city === 'string' &&
+    'postalCode' in value &&
+    typeof value.postalCode === 'string' &&
+    'plan' in value &&
+    isPlanOrEmpty(value.plan) &&
+    'skills' in value &&
+    Array.isArray(value.skills) &&
+    value.skills.every((skill) => typeof skill === 'string')
+  )
+}
+
+/** Validates wizard progress read back from storage. */
+export function isWizardState(value: unknown): value is WizardState {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'step' in value &&
+    isStepId(value.step) &&
+    'data' in value &&
+    isWizardData(value.data)
+  )
+}
+
 /** DOM id of the control for `field`, so errors can move focus to it. */
 export function getFieldId(field: WizardField): string {
   return `wizard-${field}`

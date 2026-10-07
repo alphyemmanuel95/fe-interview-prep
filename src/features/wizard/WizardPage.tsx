@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { SubmitEvent } from 'react'
+import { usePersistentState } from '../../hooks/usePersistentState'
 import { AddressStep } from './AddressStep'
 import { submitRegistration } from './api'
 import type { RegistrationReceipt } from './api'
@@ -9,9 +10,11 @@ import { ProgressSteps } from './ProgressSteps'
 import { ReviewStep } from './ReviewStep'
 import { StepActions } from './StepActions'
 import { SuccessPanel } from './SuccessPanel'
-import { getFocusTargetId, STEPS } from './types'
+import { getFocusTargetId, isWizardState, STEPS } from './types'
 import type { StepId, WizardData, WizardState } from './types'
 import { findFirstInvalidField, validateStep } from './validation'
+
+const STORAGE_KEY = 'q3.wizard.v1'
 
 const INITIAL_STATE: WizardState = {
   step: 'personal',
@@ -57,7 +60,12 @@ function getAdjacentStep(step: StepId, offset: 1 | -1): StepId {
 }
 
 export function WizardPage() {
-  const [state, setState] = useState<WizardState>(INITIAL_STATE)
+  // One object so the step and the answers are always saved together.
+  const [state, setState] = usePersistentState(
+    STORAGE_KEY,
+    INITIAL_STATE,
+    isWizardState,
+  )
   // Errors stay hidden until the user tries to leave the step, then follow
   // their edits live. Not persisted: a refresh starts the step fresh.
   const [attemptedStep, setAttemptedStep] = useState<StepId | null>(null)
@@ -110,6 +118,7 @@ export function WizardPage() {
       const receipt = await submitRegistration(data, controller.signal)
       shouldFocusHeading.current = true
       setSubmission({ status: 'success', receipt })
+      // Clear saved progress so a refresh or the next visit starts fresh.
       setState(INITIAL_STATE)
     } catch {
       // An abort only happens on unmount, where there is nothing to update.
