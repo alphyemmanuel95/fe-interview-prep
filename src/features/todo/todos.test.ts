@@ -43,6 +43,11 @@ describe('todos', () => {
     it('keeps the original title when the new title is blank', () => {
       expect(editTodo(TODOS, '1', '   ')).toBe(TODOS)
     })
+
+    it('returns the same list when nothing changes', () => {
+      expect(editTodo(TODOS, '1', ' Buy milk ')).toBe(TODOS)
+      expect(editTodo(TODOS, 'unknown', 'Anything')).toBe(TODOS)
+    })
   })
 
   it('toggles completion of the matching todo only', () => {

@@ -42,14 +42,20 @@ export function addTodo(
   return [...todos, { id, title: trimmed, completed: false }]
 }
 
-/** Renames a todo. Blank titles keep the original title. */
+/**
+ * Renames a todo. Blank or unchanged titles (and unknown ids) return the same
+ * list, so React can skip the re-render and nothing is re-saved.
+ */
 export function editTodo(
   todos: readonly Todo[],
   id: string,
   title: string,
 ): readonly Todo[] {
   const trimmed = title.trim()
-  if (trimmed === '') {
+  const isChange = todos.some(
+    (todo) => todo.id === id && todo.title !== trimmed,
+  )
+  if (trimmed === '' || !isChange) {
     return todos
   }
   return todos.map((todo) =>
