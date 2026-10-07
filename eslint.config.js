@@ -35,6 +35,7 @@ export default defineConfig([
       'no-param-reassign': 'error',
       'prefer-const': 'error',
       'object-shorthand': ['error', 'always'],
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/consistent-type-exports': 'error',
       '@typescript-eslint/no-import-type-side-effects': 'error',
