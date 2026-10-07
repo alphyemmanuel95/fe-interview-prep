@@ -16,6 +16,12 @@ const ICON_PATHS = {
   lock: 'M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z',
   logout: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3',
   bolt: 'M13 2 3 14h9l-1 8 10-12h-9l1-8Z',
+  chevronUp: 'm6 15 6-6 6 6',
+  chevronDown: 'm6 9 6 6 6-6',
+  chevronLeft: 'm15 18-6-6 6-6',
+  chevronRight: 'm9 18 6-6-6-6',
+  chevronUpDown: 'm7 15 5 5 5-5M7 9l5-5 5 5',
+  link: 'M10 14a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1 1M14 10a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1-1',
 } as const
 
 type IconProps = {

@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import { AuthPage } from './features/auth/AuthPage'
+import { QuotesTablePage } from './features/data-table/QuotesTablePage'
 import { SearchPage } from './features/search/SearchPage'
 import { TodoPage } from './features/todo/TodoPage'
 import { WizardPage } from './features/wizard/WizardPage'
@@ -40,6 +41,15 @@ export const QUESTIONS: readonly Question[] = [
     summary: 'A 3-step form with validation, review and saved progress.',
     tags: ['validation', 'saved progress', 'focus management'],
     Page: WizardPage,
+  },
+  {
+    id: 'q4',
+    path: '/q4',
+    title: 'Data Table',
+    summary:
+      'A reusable table with sorting, search, filters, paging and shareable URLs.',
+    tags: ['URL state', 'reusable table', 'pure view model'],
+    Page: QuotesTablePage,
   },
   {
     id: 'q5',
