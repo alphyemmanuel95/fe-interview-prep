@@ -31,16 +31,22 @@ function product(id: number, title: string): FixtureProduct {
   }
 }
 
-/** A fetch stand-in whose responses the test releases explicitly. */
-function createControllableFetch() {
+/**
+ * A fetch stand-in whose responses the test releases explicitly. With
+ * `ignoreAbort`, it behaves like a response that was already in flight: it
+ * still resolves after its request has been aborted.
+ */
+function createControllableFetch({ ignoreAbort = false } = {}) {
   const requests: PendingRequest[] = []
   const fetchMock = vi.fn(
     (url: string, init: RequestInit) =>
       new Promise<Response>((resolve, reject) => {
         const signal = init.signal ?? new AbortController().signal
-        signal.addEventListener('abort', () => {
-          reject(new DOMException('The request was aborted.', 'AbortError'))
-        })
+        if (!ignoreAbort) {
+          signal.addEventListener('abort', () => {
+            reject(new DOMException('The request was aborted.', 'AbortError'))
+          })
+        }
         requests.push({
           query: new URL(url).searchParams.get('q'),
           signal,
@@ -139,6 +145,32 @@ describe('SearchPage', () => {
     expect(screen.getByText('Speaker', { exact: false })).toBeInTheDocument()
     expect(screen.queryByText('Old Lamp', { exact: false })).toBeNull()
     expect(older.signal.aborted).toBe(true)
+  })
+
+  it('ignores a response that resolves after its request was aborted', async () => {
+    // Simulates a response already in flight when the query changed, so only
+    // the hook's own aborted-request guard can keep it off the screen.
+    ;({ fetchMock, requests } = createControllableFetch({ ignoreAbort: true }))
+    vi.stubGlobal('fetch', fetchMock)
+    render(<SearchPage />)
+
+    typeQuery('rea')
+    waitForDebounce()
+    typeQuery('react')
+    waitForDebounce()
+    const older = getRequest(requests, 0)
+    const latest = getRequest(requests, 1)
+
+    latest.respond([product(2, 'React Speaker')])
+    await screen.findByText('Speaker', { exact: false })
+    older.respond([product(1, 'Rea Old Lamp')])
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0)
+    })
+
+    expect(screen.getByText('Speaker', { exact: false })).toBeInTheDocument()
+    expect(screen.queryByText('Old Lamp', { exact: false })).toBeNull()
+    expect(screen.getByRole('status')).toHaveTextContent('1 result')
   })
 
   it('shows an error with a retry that searches again', async () => {
