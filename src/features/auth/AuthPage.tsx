@@ -1,6 +1,8 @@
 import { Route, Routes } from 'react-router'
 import { NotFoundPage } from '../../pages/NotFoundPage'
 import { AdminPage } from './AdminPage'
+import { apiClient } from './apiClient'
+import type { ApiClient } from './apiClient'
 import { AuthProvider } from './AuthProvider'
 import { AuthShell } from './AuthShell'
 import { DashboardPage } from './DashboardPage'
@@ -9,10 +11,15 @@ import { OrdersPage } from './OrdersPage'
 import { RequireAuth } from './RequireAuth'
 import { RequireRole } from './RequireRole'
 
+type AuthPageProps = {
+  /** Tests pass a client with a stubbed `fetch`; the app uses the default. */
+  readonly client?: ApiClient
+}
+
 /** Q5: every page below /q5 shares one session. */
-export function AuthPage() {
+export function AuthPage({ client = apiClient }: AuthPageProps) {
   return (
-    <AuthProvider>
+    <AuthProvider client={client}>
       <div className="mx-auto max-w-2xl">
         <Routes>
           <Route path="login" element={<LoginPage />} />
