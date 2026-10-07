@@ -62,6 +62,7 @@ function fillPersonalStep() {
 
 afterEach(() => {
   vi.useRealTimers()
+  vi.mocked(submitRegistration).mockClear()
 })
 
 describe('WizardPage', () => {
@@ -201,9 +202,17 @@ describe('WizardPage', () => {
 
     clickButton('Submit')
 
+    // aria-disabled (not disabled) keeps keyboard focus on the button.
     const submitting = screen.getByRole('button', { name: 'Submitting…' })
-    expect(submitting).toBeDisabled()
+    expect(submitting).toHaveAttribute('aria-disabled', 'true')
     expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled()
+    expect(
+      screen.getByText('Submitting your registration…'),
+    ).toBeInTheDocument()
+
+    // A second click while busy must not send a second request.
+    fireEvent.click(submitting)
+    expect(submitRegistration).toHaveBeenCalledTimes(1)
 
     act(() => {
       vi.advanceTimersByTime(1000)
@@ -237,6 +246,96 @@ describe('WizardPage', () => {
     )
     expect(screen.getByRole('button', { name: 'Submit' })).toBeEnabled()
     expectStep('Review')
+  })
+
+  it('attaches the error before focusing the first invalid field', () => {
+    render(<WizardPage />)
+    const name = screen.getByLabelText('Full name')
+    let descriptionAtFocus: string | null = null
+    name.addEventListener('focus', () => {
+      descriptionAtFocus = name.getAttribute('aria-describedby')
+    })
+
+    clickButton('Next')
+
+    expect(descriptionAtFocus).not.toBeNull()
+  })
+
+  it('clears a previous submit error after editing a step', async () => {
+    vi.mocked(submitRegistration).mockRejectedValueOnce(new Error('Down'))
+    renderAtStep('review')
+    clickButton('Submit')
+    await screen.findByRole('alert')
+
+    clickButton('Edit address')
+    clickButton('Next')
+    clickButton('Next')
+
+    expectStep('Review')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('never resumes stored progress past an invalid step', () => {
+    renderAtStep('review', { email: 'not-an-email' })
+    expectStep('Personal info')
+  })
+
+  it('treats a stored country that is not in the list as invalid', () => {
+    renderAtStep('review', { country: 'Atlantis' })
+    expectStep('Address')
+  })
+
+  it('keeps progress and aborts the request when leaving mid-submit', () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const { unmount } = renderAtStep('review')
+    clickButton('Submit')
+    const signal = vi.mocked(submitRegistration).mock.lastCall?.[1]
+
+    unmount()
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+
+    expect(signal?.aborted).toBe(true)
+    const stored: unknown = JSON.parse(
+      window.localStorage.getItem(STORAGE_KEY) ?? 'null',
+    )
+    expect(stored).toMatchObject({ step: 'review' })
+  })
+
+  it('clears saved progress after a successful submit', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const { unmount } = renderAtStep('review')
+    clickButton('Submit')
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    await screen.findByRole('heading', { name: 'Registration complete' })
+    unmount()
+
+    render(<WizardPage />)
+
+    expectStep('Personal info')
+    expect(screen.getByLabelText('Full name')).toHaveValue('')
+  })
+
+  it('explains a duplicate skill and announces adds and removals', () => {
+    renderAtStep('preferences', { skills: ['React'] })
+    const skillInput = screen.getByLabelText('Skills')
+
+    fireEvent.change(skillInput, { target: { value: 'react' } })
+    clickButton('Add')
+    expect(skillInput).toHaveValue('react')
+    expect(skillInput).toHaveAccessibleDescription(
+      expect.stringContaining('react is already added.'),
+    )
+
+    fireEvent.change(skillInput, { target: { value: 'CSS' } })
+    clickButton('Add')
+    expect(screen.getByText('Added CSS')).toBeInTheDocument()
+
+    clickButton('Remove CSS')
+    expect(screen.getByText('Removed CSS')).toBeInTheDocument()
   })
 
   it('restores the step and answers after a remount', () => {
