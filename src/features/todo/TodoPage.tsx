@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { SubmitEvent } from 'react'
 import { usePersistentState } from '../../hooks/usePersistentState'
 import { createId } from '../../lib/createId'
-import { Icon } from './Icon'
+import { Icon } from '../../components/Icon'
 import { TodoFilters } from './TodoFilters'
 import { TodoItem } from './TodoItem'
 import {
