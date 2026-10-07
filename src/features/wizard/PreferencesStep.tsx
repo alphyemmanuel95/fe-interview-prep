@@ -42,6 +42,8 @@ export function PreferencesStep({ data, errors, onChange }: StepFieldsProps) {
     if (nextSkills === data.skills) {
       // Keep the draft so the user can see and correct what they typed.
       setSkillNotice(`${skill} is already added.`)
+      // Focus stays put, so a description change alone is not announced.
+      setAnnouncement(`${skill} is already added.`)
       return
     }
     onChange({ skills: nextSkills })
