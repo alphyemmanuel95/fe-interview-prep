@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent, SubmitEvent } from 'react'
-import { Icon } from './Icon'
+import { Icon } from '../../components/Icon'
 import type { Todo } from './todos'
 
 type TodoItemProps = {
