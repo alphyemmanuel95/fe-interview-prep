@@ -9,6 +9,13 @@ export type TableResult<T> = {
   readonly page: number
 }
 
+// Building a collator is expensive, and localeCompare with options builds one
+// per call, so a single shared collator keeps large string sorts fast.
+const COLLATOR = new Intl.Collator(undefined, {
+  sensitivity: 'base',
+  numeric: true,
+})
+
 function normalise(value: string | number): string {
   return String(value).trim().toLocaleLowerCase()
 }
@@ -17,10 +24,7 @@ function compareValues(a: string | number, b: string | number): number {
   if (typeof a === 'number' && typeof b === 'number') {
     return a - b
   }
-  return String(a).localeCompare(String(b), undefined, {
-    sensitivity: 'base',
-    numeric: true,
-  })
+  return COLLATOR.compare(String(a), String(b))
 }
 
 function matchesSearch<T>(

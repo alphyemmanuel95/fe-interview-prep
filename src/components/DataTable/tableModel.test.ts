@@ -107,6 +107,36 @@ describe('applyView', () => {
     ])
   })
 
+  it('sorts thousands of rows by a string column', () => {
+    const count = 3000
+    // Labels run from "item 2999" down to "item 0", with mixed case.
+    const many = Array.from({ length: count }, (_, index) => ({
+      id: index + 1,
+      name: `${index % 2 === 0 ? 'Item' : 'item'} ${String(count - 1 - index)}`,
+      team: 'Red',
+      score: index,
+    }))
+
+    const result = applyView(many, COLUMNS, {
+      ...DEFAULT_VIEW,
+      sort: { columnId: 'name', direction: 'asc' },
+      pageSize: 50,
+    })
+
+    expect(result.totalRows).toBe(count)
+    expect(result.pageRows[0]?.name.toLowerCase()).toBe('item 0')
+    expect(result.pageRows[1]?.name.toLowerCase()).toBe('item 1')
+    expect(result.pageRows[49]?.name.toLowerCase()).toBe('item 49')
+
+    const last = applyView(many, COLUMNS, {
+      ...DEFAULT_VIEW,
+      sort: { columnId: 'name', direction: 'asc' },
+      pageSize: 50,
+      page: count / 50,
+    })
+    expect(last.pageRows.at(-1)?.name.toLowerCase()).toBe('item 2999')
+  })
+
   it('keeps the original order of equal values (stable sort)', () => {
     expect(ids({ sort: { columnId: 'score', direction: 'desc' } })).toEqual([
       3, 2, 4, 1, 5,
