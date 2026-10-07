@@ -15,7 +15,7 @@ export function HighlightedText({ text, query }: HighlightedTextProps) {
           // index is a stable key here.
           <mark
             key={index}
-            className="rounded-sm bg-violet-100 px-0.5 font-semibold text-violet-900"
+            className="rounded-sm bg-violet-100 font-semibold text-violet-900"
           >
             {segment.text}
           </mark>
