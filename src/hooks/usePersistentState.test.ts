@@ -36,4 +36,10 @@ describe('usePersistentState', () => {
     )
     expect(result.current[0]).toBe('hello')
   })
+
+  it('does not overwrite stored data on mount', () => {
+    window.localStorage.setItem('greeting', JSON.stringify(42))
+    renderHook(() => usePersistentState('greeting', 'hello', isString))
+    expect(window.localStorage.getItem('greeting')).toBe('42')
+  })
 })

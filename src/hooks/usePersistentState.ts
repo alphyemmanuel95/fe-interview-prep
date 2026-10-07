@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import { readJson, writeJson } from '../lib/storage'
 
@@ -16,8 +16,15 @@ export function usePersistentState<T>(
   const [value, setValue] = useState<T>(
     () => readJson(key, isValid) ?? initialValue,
   )
+  // Only write after a real change, so mounting never overwrites stored data
+  // (including data this version failed to read) with the fallback value.
+  const lastSavedValue = useRef(value)
 
   useEffect(() => {
+    if (value === lastSavedValue.current) {
+      return
+    }
+    lastSavedValue.current = value
     writeJson(key, value)
   }, [key, value])
 
