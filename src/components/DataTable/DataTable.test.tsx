@@ -133,7 +133,9 @@ describe('DataTable', () => {
     renderTable()
     const previous = screen.getByRole('button', { name: 'Previous' })
     const next = screen.getByRole('button', { name: 'Next' })
-    expect(previous).toBeDisabled()
+    expect(previous).toHaveAttribute('aria-disabled', 'true')
+    fireEvent.click(previous)
+    expect(screen.getByText('Page 1 of 3')).toBeInTheDocument()
 
     fireEvent.click(next)
     expect(screen.getByText('Page 2 of 3')).toBeInTheDocument()
@@ -141,10 +143,24 @@ describe('DataTable', () => {
 
     fireEvent.click(next)
     expect(screen.getByText('Page 3 of 3')).toBeInTheDocument()
-    expect(next).toBeDisabled()
+    expect(next).toHaveAttribute('aria-disabled', 'true')
+    fireEvent.click(next)
+    expect(screen.getByText('Page 3 of 3')).toBeInTheDocument()
 
     fireEvent.click(previous)
     expect(screen.getByText('Page 2 of 3')).toBeInTheDocument()
+  })
+
+  it('keeps focus on Next when it reaches the last page', () => {
+    renderTable({ page: 2 })
+    const next = screen.getByRole('button', { name: 'Next' })
+    next.focus()
+
+    fireEvent.click(next)
+
+    expect(screen.getByText('Page 3 of 3')).toBeInTheDocument()
+    expect(next).toHaveFocus()
+    expect(next).toHaveAttribute('aria-disabled', 'true')
   })
 
   it('changes the page size and returns to page 1', () => {
@@ -216,6 +232,7 @@ describe('DataTable', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }))
 
     expect(visibleNames()).toHaveLength(10)
+    expect(screen.getByLabelText('Search')).toHaveFocus()
     expect(screen.getByLabelText('Search')).toHaveValue('')
     expect(screen.getByLabelText('Filter by Team')).toHaveValue('')
   })

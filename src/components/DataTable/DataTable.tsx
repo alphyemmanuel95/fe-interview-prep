@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, useRef } from 'react'
 import { SortableHeader } from './SortableHeader'
 import { TablePagination } from './TablePagination'
 import { TableToolbar } from './TableToolbar'
@@ -46,6 +46,7 @@ export function DataTable<T>({
   caption,
 }: DataTableProps<T>) {
   const idPrefix = useId()
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const result = applyView(rows, columns, view)
   const isFiltered = hasActiveFilters(view)
 
@@ -65,6 +66,9 @@ export function DataTable<T>({
 
   function handleClearFilters() {
     onViewChange({ ...view, search: '', filters: {}, page: 1 })
+    // The Clear filters button disappears with the empty state, so focus
+    // moves to where the user would start a new search.
+    searchInputRef.current?.focus()
   }
 
   return (
@@ -76,6 +80,7 @@ export function DataTable<T>({
         filters={view.filters}
         onSearchChange={handleSearchChange}
         onFilterChange={handleFilterChange}
+        searchInputRef={searchInputRef}
       />
 
       <div className="border-t border-slate-200">

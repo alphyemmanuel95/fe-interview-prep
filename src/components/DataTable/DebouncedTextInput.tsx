@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import type { Ref } from 'react'
 
 const DEBOUNCE_MS = 300
 
@@ -10,6 +11,8 @@ type DebouncedTextInputProps = {
   readonly value: string
   readonly onCommit: (value: string) => void
   readonly placeholder?: string
+  /** Lets the owner move focus to the input, e.g. after clearing it. */
+  readonly ref?: Ref<HTMLInputElement>
 }
 
 /**
@@ -23,6 +26,7 @@ export function DebouncedTextInput({
   value,
   onCommit,
   placeholder,
+  ref,
 }: DebouncedTextInputProps) {
   const [draft, setDraft] = useState(value)
   const [lastValue, setLastValue] = useState(value)
@@ -61,6 +65,7 @@ export function DebouncedTextInput({
         {label}
       </label>
       <input
+        ref={ref}
         id={id}
         type={type}
         value={draft}

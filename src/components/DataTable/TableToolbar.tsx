@@ -1,3 +1,4 @@
+import type { Ref } from 'react'
 import { DebouncedTextInput } from './DebouncedTextInput'
 import type { Column, TableView } from './types'
 
@@ -8,6 +9,7 @@ type TableToolbarProps<T> = {
   readonly filters: TableView['filters']
   readonly onSearchChange: (search: string) => void
   readonly onFilterChange: (columnId: string, value: string) => void
+  readonly searchInputRef: Ref<HTMLInputElement>
 }
 
 const SELECT_CLASS =
@@ -21,10 +23,12 @@ export function TableToolbar<T>({
   filters,
   onSearchChange,
   onFilterChange,
+  searchInputRef,
 }: TableToolbarProps<T>) {
   return (
     <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-5">
       <DebouncedTextInput
+        ref={searchInputRef}
         id={`${idPrefix}-search`}
         label="Search"
         type="search"

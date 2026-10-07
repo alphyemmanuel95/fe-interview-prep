@@ -15,7 +15,7 @@ type TablePaginationProps = {
 const NUMBER_FORMAT = new Intl.NumberFormat('en-US')
 
 const PAGE_BUTTON_CLASS =
-  'inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white'
+  'inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-white'
 
 function describeRange(
   page: number,
@@ -34,6 +34,11 @@ function toPageSize(value: string): PageSize {
   return PAGE_SIZES.find((size) => String(size) === value) ?? PAGE_SIZES[0]
 }
 
+/**
+ * Page buttons at either end use aria-disabled instead of disabled: a
+ * disabled button drops keyboard focus to the page body, which happened
+ * whenever Next reached the last page (or Previous the first).
+ */
 export function TablePagination({
   idPrefix,
   page,
@@ -44,6 +49,8 @@ export function TablePagination({
   onPageSizeChange,
 }: TablePaginationProps) {
   const pageSizeId = `${idPrefix}-page-size`
+  const isFirstPage = page <= 1
+  const isLastPage = page >= pageCount
 
   return (
     <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-5">
@@ -72,9 +79,11 @@ export function TablePagination({
           <button
             type="button"
             onClick={() => {
-              onPageChange(page - 1)
+              if (!isFirstPage) {
+                onPageChange(page - 1)
+              }
             }}
-            disabled={page <= 1}
+            aria-disabled={isFirstPage}
             className={PAGE_BUTTON_CLASS}
           >
             <Icon name="chevronLeft" className="size-4" />
@@ -86,9 +95,11 @@ export function TablePagination({
           <button
             type="button"
             onClick={() => {
-              onPageChange(page + 1)
+              if (!isLastPage) {
+                onPageChange(page + 1)
+              }
             }}
-            disabled={page >= pageCount}
+            aria-disabled={isLastPage}
             className={PAGE_BUTTON_CLASS}
           >
             Next
