@@ -33,11 +33,11 @@ export function SummarySection({
           Edit
         </button>
       </div>
-      <dl className="mt-3 grid gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
+      <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
         {rows.map((row) => (
           <div key={row.label} className="contents">
             <dt className="text-slate-500">{row.label}</dt>
-            <dd className="font-medium break-words text-slate-900 sm:col-span-2">
+            <dd className="min-w-0 font-medium wrap-anywhere text-slate-900 sm:col-span-2">
               {row.value}
             </dd>
           </div>
