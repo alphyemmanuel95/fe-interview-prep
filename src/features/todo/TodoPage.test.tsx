@@ -106,6 +106,16 @@ describe('TodoPage', () => {
     expect(screen.getByLabelText('Buy milk')).toHaveFocus()
   })
 
+  it('moves focus to the first remaining item after clearing completed', () => {
+    render(<TodoPage />)
+    addTodo('Buy milk')
+    addTodo('Walk dog')
+    fireEvent.click(screen.getByLabelText('Buy milk'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear completed' }))
+    expect(screen.getByLabelText('Walk dog')).toHaveFocus()
+  })
+
   it('deletes a todo', () => {
     render(<TodoPage />)
     addTodo('Buy milk')

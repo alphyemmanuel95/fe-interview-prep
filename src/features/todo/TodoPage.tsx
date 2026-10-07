@@ -90,6 +90,8 @@ export function TodoPage() {
   }
 
   function handleClearCompleted() {
+    // The button disables itself, so send focus to the first remaining item.
+    focusIndexAfterRemoval.current = 0
     setTodos(clearCompleted)
   }
 
