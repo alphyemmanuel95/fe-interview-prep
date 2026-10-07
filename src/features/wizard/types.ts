@@ -2,6 +2,13 @@ export const STEPS = ['personal', 'address', 'preferences', 'review'] as const
 
 export type StepId = (typeof STEPS)[number]
 
+export const STEP_LABELS: Record<StepId, string> = {
+  personal: 'Personal',
+  address: 'Address',
+  preferences: 'Preferences',
+  review: 'Review',
+}
+
 export const PLANS = ['Free', 'Pro', 'Team'] as const
 
 export type Plan = (typeof PLANS)[number]
@@ -42,4 +49,15 @@ export type FieldErrors = Partial<Record<WizardField, string>>
 /** DOM id of the control for `field`, so errors can move focus to it. */
 export function getFieldId(field: WizardField): string {
   return `wizard-${field}`
+}
+
+export function getErrorId(field: WizardField): string {
+  return `${getFieldId(field)}-error`
+}
+
+/** Props shared by the editable steps. */
+export type StepFieldsProps = {
+  readonly data: WizardData
+  readonly errors: FieldErrors
+  readonly onChange: (changes: Partial<WizardData>) => void
 }

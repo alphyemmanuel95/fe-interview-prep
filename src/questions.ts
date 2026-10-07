@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import { SearchPage } from './features/search/SearchPage'
 import { TodoPage } from './features/todo/TodoPage'
+import { WizardPage } from './features/wizard/WizardPage'
 
 export type Question = {
   readonly id: string
@@ -26,5 +27,12 @@ export const QUESTIONS: readonly Question[] = [
     summary:
       'Search products as you type, with debouncing and stale-response protection.',
     Page: SearchPage,
+  },
+  {
+    id: 'q3',
+    path: '/q3',
+    title: 'Registration Wizard',
+    summary: 'A 3-step form with validation, review and saved progress.',
+    Page: WizardPage,
   },
 ]
