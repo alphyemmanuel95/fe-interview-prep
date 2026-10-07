@@ -117,3 +117,28 @@ test('back and forward step through previous views', async ({ page }) => {
   await page.goForward()
   await expect(page.getByText('Page 3 of 52', { exact: true })).toBeVisible()
 })
+
+test.describe('on a small screen', () => {
+  test.use({ viewport: { width: 375, height: 812 } })
+
+  test('fits the table and its empty state without scrolling sideways', async ({
+    page,
+  }) => {
+    await openTable(page)
+    const table = page.getByRole('table', { name: 'Quotes' })
+    const tableBox = await table.boundingBox()
+    expect(tableBox).not.toBeNull()
+    expect((tableBox?.x ?? 0) + (tableBox?.width ?? 0)).toBeLessThanOrEqual(375)
+    expect(
+      await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      ),
+    ).toBe(0)
+
+    await page.getByLabel('Search').fill('no such quote')
+    const clear = page.getByRole('button', { name: 'Clear filters' })
+    await expect(clear).toBeInViewport({ ratio: 1 })
+  })
+})

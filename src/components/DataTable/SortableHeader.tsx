@@ -33,7 +33,7 @@ export function SortableHeader({
     <th
       scope="col"
       aria-sort={direction === null ? 'none' : ARIA_SORT[direction]}
-      className={`px-4 py-3 ${align === 'right' ? 'text-right' : 'text-left'}`}
+      className={`px-3 py-3 sm:px-4 ${align === 'right' ? 'text-right' : 'text-left'}`}
     >
       <button
         type="button"

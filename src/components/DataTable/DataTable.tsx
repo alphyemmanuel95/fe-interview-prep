@@ -27,6 +27,12 @@ function alignClass(align: Column<unknown>['align']): string {
   return align === 'right' ? 'text-right tabular-nums' : 'text-left'
 }
 
+// Text cells may break inside long words so the table fits narrow screens
+// without scrolling sideways; numbers stay whole.
+function cellClass(align: Column<unknown>['align']): string {
+  return align === 'right' ? alignClass(align) : 'text-left wrap-anywhere'
+}
+
 /**
  * A generic table configured by its columns, with sorting, global search,
  * column filters and pagination.
@@ -72,8 +78,8 @@ export function DataTable<T>({
         onFilterChange={handleFilterChange}
       />
 
-      <div className="overflow-x-auto border-t border-slate-200">
-        <table className="w-full min-w-2xl text-sm">
+      <div className="border-t border-slate-200">
+        <table className="w-full text-sm">
           <caption className="sr-only">{caption}</caption>
           <thead className="bg-slate-50">
             <tr>
@@ -84,7 +90,7 @@ export function DataTable<T>({
                     <th
                       key={column.id}
                       scope="col"
-                      className={`px-4 py-3 font-semibold text-slate-700 ${alignClass(align)}`}
+                      className={`px-3 py-3 font-semibold text-slate-700 sm:px-4 ${alignClass(align)}`}
                     >
                       {column.header}
                     </th>
@@ -118,7 +124,7 @@ export function DataTable<T>({
                 {columns.map((column) => (
                   <td
                     key={column.id}
-                    className={`px-4 py-3 align-top text-slate-700 ${alignClass(column.align)}`}
+                    className={`px-3 py-3 align-top text-slate-700 sm:px-4 ${cellClass(column.align)}`}
                   >
                     {column.renderCell === undefined
                       ? column.getValue(row)
@@ -131,8 +137,8 @@ export function DataTable<T>({
         </table>
       </div>
 
-      {/* The empty state sits outside the scrolling table so it always spans
-          the card, however wide the columns are. */}
+      {/* The empty state sits outside the table so it always spans the card
+          and never changes the column widths. */}
       {result.pageRows.length === 0 && (
         <div className="flex flex-col items-center border-t border-slate-100 px-4 py-12 text-center">
           <p className="font-medium text-slate-700">
