@@ -34,3 +34,7 @@ coverage
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Local Claude Code harness (not part of the project)
+.claude/
+CLAUDE.md
