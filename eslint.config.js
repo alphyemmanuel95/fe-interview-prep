@@ -59,7 +59,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['*.config.ts', 'e2e/**/*.ts'],
+    files: ['*.config.ts', 'e2e/**/*.ts', 'mock-server/**/*.ts'],
     languageOptions: {
       globals: globals.node,
     },

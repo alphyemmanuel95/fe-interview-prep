@@ -8,7 +8,7 @@ Five React + TypeScript features, each shipped as its own pull request. Every qu
 | 2   | Live Search              | [#2](https://github.com/alphyemmanuel95/fe-interview-prep/pull/2) |
 | 3   | Registration Wizard      | [#3](https://github.com/alphyemmanuel95/fe-interview-prep/pull/3) |
 | 4   | Data Table               | [#4](https://github.com/alphyemmanuel95/fe-interview-prep/pull/4) |
-| 5   | Login & Session Handling |                                                                   |
+| 5   | Login & Session Handling | [#5](https://github.com/alphyemmanuel95/fe-interview-prep/pull/5) |
 
 **Video:**
 

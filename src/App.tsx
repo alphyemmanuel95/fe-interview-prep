@@ -10,7 +10,7 @@ function App() {
       <Route element={<Layout />}>
         <Route index element={<HomePage questions={QUESTIONS} />} />
         {QUESTIONS.map(({ id, path, Page }) => (
-          <Route key={id} path={path} element={<Page />} />
+          <Route key={id} path={`${path}/*`} element={<Page />} />
         ))}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
