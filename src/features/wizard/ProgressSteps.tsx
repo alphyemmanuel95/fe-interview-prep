@@ -12,7 +12,7 @@ export function ProgressSteps({ current }: ProgressStepsProps) {
 
   return (
     <div className="mt-5">
-      <p className="text-sm font-medium text-indigo-100">
+      <p className="text-sm font-medium text-white">
         Step {currentIndex + 1} of {STEPS.length}
       </p>
       <div
@@ -31,7 +31,7 @@ export function ProgressSteps({ current }: ProgressStepsProps) {
         {STEPS.map((step, index) => {
           const isDone = index < currentIndex
           const isCurrent = index === currentIndex
-          let markerClass = 'border-2 border-white/40 text-white/80'
+          let markerClass = 'border-2 border-white/70 text-white'
           if (isDone) {
             markerClass = 'bg-white text-indigo-700'
           } else if (isCurrent) {
@@ -49,7 +49,11 @@ export function ProgressSteps({ current }: ProgressStepsProps) {
               >
                 {isDone ? <Icon name="check" className="size-4" /> : index + 1}
               </span>
-              <span className={isCurrent ? 'text-white' : 'text-indigo-100'}>
+              <span
+                className={
+                  isCurrent ? 'font-semibold text-white' : 'text-white'
+                }
+              >
                 {STEP_LABELS[step]}
                 {isDone && <span className="sr-only"> (completed)</span>}
               </span>
