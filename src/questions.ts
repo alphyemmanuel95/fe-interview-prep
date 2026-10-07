@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { SearchPage } from './features/search/SearchPage'
 import { TodoPage } from './features/todo/TodoPage'
 
 export type Question = {
@@ -17,5 +18,13 @@ export const QUESTIONS: readonly Question[] = [
     title: 'Todo App',
     summary: 'Add, edit, complete and filter todos that survive a refresh.',
     Page: TodoPage,
+  },
+  {
+    id: 'q2',
+    path: '/q2',
+    title: 'Live Search',
+    summary:
+      'Search products as you type, with debouncing and stale-response protection.',
+    Page: SearchPage,
   },
 ]
