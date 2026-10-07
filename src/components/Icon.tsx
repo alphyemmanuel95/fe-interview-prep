@@ -13,6 +13,9 @@ const ICON_PATHS = {
   arrowRight: 'M5 12h14m-7-7 7 7-7 7',
   clipboard:
     'M9 5h6M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m0 0h1a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1m0 7 2 2 4-4',
+  lock: 'M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z',
+  logout: 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3',
+  bolt: 'M13 2 3 14h9l-1 8 10-12h-9l1-8Z',
 } as const
 
 type IconProps = {
