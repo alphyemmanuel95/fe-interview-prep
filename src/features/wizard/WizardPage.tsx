@@ -82,7 +82,12 @@ export function WizardPage() {
   const { data } = state
   // Stored progress is untrusted (old builds, manual edits): never resume past
   // the first step whose data is invalid, so Review only ever sees valid data.
+  // The clamp is saved (adjusting state during render), so fixing the field
+  // later can't move the user forward without them pressing Next.
   const step = earlierStep(state.step, findFirstInvalidStep(data))
+  if (step !== state.step) {
+    setState((current) => ({ ...current, step }))
+  }
   const errors = attemptedStep === step ? validateStep(step, data) : {}
   const isSubmitting = submission.status === 'submitting'
 

@@ -278,6 +278,12 @@ describe('WizardPage', () => {
   it('never resumes stored progress past an invalid step', () => {
     renderAtStep('review', { email: 'not-an-email' })
     expectStep('Personal info')
+
+    // Fixing the field must not jump ahead without pressing Next.
+    fillField('Email', 'asha@example.com')
+    expectStep('Personal info')
+    clickButton('Next')
+    expectStep('Address')
   })
 
   it('treats a stored country that is not in the list as invalid', () => {
@@ -328,6 +334,9 @@ describe('WizardPage', () => {
     expect(skillInput).toHaveValue('react')
     expect(skillInput).toHaveAccessibleDescription(
       expect.stringContaining('react is already added.'),
+    )
+    expect(screen.getAllByRole('status').map((el) => el.textContent)).toContain(
+      'react is already added.',
     )
 
     fireEvent.change(skillInput, { target: { value: 'CSS' } })
