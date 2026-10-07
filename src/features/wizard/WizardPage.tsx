@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { SubmitEvent } from 'react'
+import { flushSync } from 'react-dom'
 import { usePersistentState } from '../../hooks/usePersistentState'
 import { AddressStep } from './AddressStep'
 import { submitRegistration } from './api'
@@ -12,7 +13,11 @@ import { StepActions } from './StepActions'
 import { SuccessPanel } from './SuccessPanel'
 import { getFocusTargetId, isWizardState, STEPS } from './types'
 import type { StepId, WizardData, WizardState } from './types'
-import { findFirstInvalidField, validateStep } from './validation'
+import {
+  findFirstInvalidField,
+  findFirstInvalidStep,
+  validateStep,
+} from './validation'
 
 const STORAGE_KEY = 'q3.wizard.v1'
 
@@ -59,6 +64,10 @@ function getAdjacentStep(step: StepId, offset: 1 | -1): StepId {
   return STEPS[STEPS.indexOf(step) + offset] ?? step
 }
 
+function earlierStep(a: StepId, b: StepId): StepId {
+  return STEPS.indexOf(a) <= STEPS.indexOf(b) ? a : b
+}
+
 export function WizardPage() {
   // One object so the step and the answers are always saved together.
   const [state, setState] = usePersistentState(
@@ -70,7 +79,10 @@ export function WizardPage() {
   // their edits live. Not persisted: a refresh starts the step fresh.
   const [attemptedStep, setAttemptedStep] = useState<StepId | null>(null)
   const [submission, setSubmission] = useState<Submission>({ status: 'idle' })
-  const { step, data } = state
+  const { data } = state
+  // Stored progress is untrusted (old builds, manual edits): never resume past
+  // the first step whose data is invalid, so Review only ever sees valid data.
+  const step = earlierStep(state.step, findFirstInvalidStep(data))
   const errors = attemptedStep === step ? validateStep(step, data) : {}
   const isSubmitting = submission.status === 'submitting'
 
@@ -97,6 +109,8 @@ export function WizardPage() {
   function goToStep(nextStep: StepId) {
     shouldFocusHeading.current = true
     setAttemptedStep(null)
+    // A previous submit error refers to data the user may now change.
+    setSubmission({ status: 'idle' })
     setState((current) => ({ ...current, step: nextStep }))
   }
 
@@ -137,7 +151,11 @@ export function WizardPage() {
     const stepErrors = validateStep(step, data)
     const firstInvalidField = findFirstInvalidField(step, stepErrors)
     if (firstInvalidField !== undefined) {
-      setAttemptedStep(step)
+      // Commit the error text and aria attributes before moving focus, so
+      // screen readers announce the error together with the field.
+      flushSync(() => {
+        setAttemptedStep(step)
+      })
       document.getElementById(getFocusTargetId(firstInvalidField))?.focus()
       return
     }
@@ -163,15 +181,21 @@ export function WizardPage() {
   return (
     <section aria-labelledby="wizard-heading" className="mx-auto max-w-xl">
       <div className="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 shadow-indigo-900/10 ring-slate-900/5">
-        <header className="bg-linear-to-br from-indigo-600 via-violet-600 to-fuchsia-500 px-6 pt-6 pb-5 text-white">
+        {/* Ends on fuchsia-600 rather than 500: the progress labels sit on the
+            light end of the gradient and need AA contrast. */}
+        <header className="bg-linear-to-br from-indigo-600 via-violet-600 to-fuchsia-600 px-6 pt-6 pb-5 text-white">
           <h1 id="wizard-heading" className="text-2xl font-bold sm:text-3xl">
             Registration Wizard
           </h1>
-          <p className="mt-1 text-sm text-indigo-100">
-            Create your account in three quick steps.
+          <p className="mt-1 text-sm text-indigo-50">
+            Three quick steps, then review and submit.
           </p>
           {submission.status !== 'success' && <ProgressSteps current={step} />}
         </header>
+
+        <p role="status" className="sr-only">
+          {isSubmitting ? 'Submitting your registration…' : ''}
+        </p>
 
         {submission.status === 'success' ? (
           <SuccessPanel

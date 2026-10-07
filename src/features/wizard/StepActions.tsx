@@ -28,7 +28,13 @@ export function StepActions({
           Back
         </button>
       )}
-      <button type="submit" disabled={isBusy} className={PRIMARY_BUTTON_CLASS}>
+      {/* aria-disabled rather than disabled while busy, so keyboard focus
+          stays on the button; the submit handler ignores repeat submits. */}
+      <button
+        type="submit"
+        aria-disabled={isBusy}
+        className={`${PRIMARY_BUTTON_CLASS} aria-disabled:cursor-wait aria-disabled:bg-indigo-400`}
+      >
         {submitLabel}
         {!isBusy && <Icon name="arrowRight" className="size-5" />}
       </button>
